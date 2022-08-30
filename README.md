@@ -18,7 +18,9 @@ composer require ekvedaras/class-factory
 
 ## PhpStorm plugin
 
-⏳ Coming soon...
+⏳ Release coming soon.
+
+Repository for manual installs already available here: [class-factory-phpstorm](https://github.com/ekvedaras/class-factory-phpstorm)
 
 ## Usage
 
