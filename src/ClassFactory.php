@@ -3,7 +3,6 @@
 namespace EKvedaras\ClassFactory;
 
 use Closure;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 /**
@@ -23,7 +22,9 @@ abstract class ClassFactory
     /** @return static<T> */
     public static function new(): static
     {
-        return tap(new static(), fn (self $factory) => $factory->state($factory->definition()));
+        $factory = new static();
+
+        return $factory->state($factory->definition());
     }
 
     abstract protected function definition(): array;
@@ -51,19 +52,18 @@ abstract class ClassFactory
             $this->state($state);
         }
 
-        return tap(
-            new $this->class(...$this->collapseStates()),
-            function ($object) {
-                foreach ($this->lateTransformers as $transformer) {
-                    $transformer($object);
-                }
-            }
-        );
+        $object = new $this->class(...$this->collapseStates());
+
+        foreach ($this->lateTransformers as $transformer) {
+            $transformer($object);
+        }
+
+        return $object;
     }
 
     private function collapseStates(): array
     {
-        return Arr::only(
+        return array_intersect_key(
             array_map(
                 $this->makeIfFactory(...),
                 array_reduce(
@@ -71,14 +71,14 @@ abstract class ClassFactory
                     fn (array $collapsedState, array | Closure $state) => array_merge(
                         $collapsedState,
                         array_map(
-                            fn ($value) => value($value, $collapsedState),
-                            value($state, $collapsedState),
+                            fn ($value) => is_callable($value) ? $value($collapsedState) : $value,
+                            is_callable($state) ? $state($collapsedState) : $state,
                         ),
                     ),
                     [],
                 )
             ),
-            array_keys($this->definition()),
+            array_flip(array_keys($this->definition()))
         );
     }
 
@@ -92,7 +92,7 @@ abstract class ClassFactory
             return array_map($this->makeIfFactory(...), $value);
         }
 
-        if ($value instanceof Collection) {
+        if (class_exists(Collection::class) && $value instanceof Collection) {
             return $value->map($this->makeIfFactory(...));
         }
 

@@ -4,6 +4,7 @@ use EKvedaras\ClassFactory\Tests\TestClasses\Account;
 use EKvedaras\ClassFactory\Tests\TestClasses\AccountFactory;
 use EKvedaras\ClassFactory\Tests\TestClasses\CustomerFactory;
 use EKvedaras\ClassFactory\Tests\TestClasses\OrderFactory;
+use Illuminate\Support\Collection;
 
 it('can create a class from base definition', function () {
     $account = AccountFactory::new()->make();
@@ -82,7 +83,7 @@ it('automatically makes other factories inside collection properties', function 
         ->and($order->items->first()->price)->toBe(100_50)
         ->and($order->items->last()->id)->toBe(2)
         ->and($order->items->last()->price)->toBe(200_25);
-});
+})->skip(! class_exists(Collection::class));
 
 it('can modify the class after making it', function () {
     $account = AccountFactory::new()->after(function (Account $account) {
