@@ -14,7 +14,7 @@ abstract class ClassFactory
     /** @var class-string<T> */
     protected string $class;
 
-    /** @var array|Closure[] */
+    /** @var array[]|Closure[] */
     private array $states = [];
 
     /** @var Closure[] */
