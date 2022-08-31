@@ -13,7 +13,7 @@ This is mostly useful for creating plain classes like value objects, entities, D
 You can install the package via composer:
 
 ```bash
-composer require ekvedaras/class-factory
+composer require --dev ekvedaras/class-factory
 ```
 
 ## PhpStorm plugin
