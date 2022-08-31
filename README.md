@@ -18,9 +18,10 @@ composer require --dev ekvedaras/class-factory
 
 ## PhpStorm plugin
 
-⏳ Release coming soon.
+Provides autocomplete and refactoring capabillities for PhpStorm.
 
-Repository for manual installs already available here: [class-factory-phpstorm](https://github.com/ekvedaras/class-factory-phpstorm)
+* Plugin: [ClassFactory](https://plugins.jetbrains.com/plugin/19824-classfactory)
+* Repository: [class-factory-phpstorm](https://github.com/ekvedaras/class-factory-phpstorm)
 
 ## Usage
 
