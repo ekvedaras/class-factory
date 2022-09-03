@@ -3,6 +3,7 @@
 use EKvedaras\ClassFactory\Tests\TestClasses\Account;
 use EKvedaras\ClassFactory\Tests\TestClasses\AccountFactory;
 use EKvedaras\ClassFactory\Tests\TestClasses\CustomerFactory;
+use EKvedaras\ClassFactory\Tests\TestClasses\ItemFactoryWithClosureInDefinition;
 use EKvedaras\ClassFactory\Tests\TestClasses\OrderFactory;
 use Illuminate\Support\Collection;
 
@@ -91,4 +92,10 @@ it('can modify the class after making it', function () {
     })->make();
 
     expect($account->name)->toBe('Modified John');
+});
+
+it('can create factories with closures in definition', function () {
+    $item = ItemFactoryWithClosureInDefinition::new()->make();
+
+    expect($item->price)->toBe($item->id * 10);
 });

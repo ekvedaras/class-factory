@@ -63,23 +63,27 @@ abstract class ClassFactory
 
     private function collapseStates(): array
     {
-        return array_intersect_key(
-            array_map(
-                $this->makeIfFactory(...),
-                array_reduce(
-                    $this->states,
-                    fn (array $collapsedState, array | Closure $state) => array_merge(
-                        $collapsedState,
-                        array_map(
-                            fn ($value) => is_callable($value) ? $value($collapsedState) : $value,
-                            is_callable($state) ? $state($collapsedState) : $state,
-                        ),
-                    ),
-                    [],
-                )
-            ),
-            array_flip(array_keys($this->definition()))
+        $definedProperties = array_flip(array_keys($this->definition()));
+
+        $collapsedStateWithPendingFactories = array_reduce(
+            $this->states,
+            function (array $collapsedState, array | Closure $stateWithPendingClosures) {
+                $stateWithResolvedClosures = array_map(
+                    fn ($value) => is_callable($value) ? $value($collapsedState) : $value,
+                    is_callable($stateWithPendingClosures) ? $stateWithPendingClosures($collapsedState) : $stateWithPendingClosures,
+                );
+
+                return array_merge($collapsedState, $stateWithResolvedClosures);
+            },
+            initial: $this->definition(),
         );
+
+        $collapsedStateWithMadeFactories = array_map(
+            $this->makeIfFactory(...),
+            $collapsedStateWithPendingFactories,
+        );
+
+        return array_intersect_key($collapsedStateWithMadeFactories, $definedProperties);
     }
 
     private function makeIfFactory(mixed $value): mixed
