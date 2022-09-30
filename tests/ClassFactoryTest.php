@@ -5,6 +5,8 @@ use EKvedaras\ClassFactory\Tests\TestClasses\AccountFactory;
 use EKvedaras\ClassFactory\Tests\TestClasses\CustomerFactory;
 use EKvedaras\ClassFactory\Tests\TestClasses\ItemFactoryWithClosureInDefinition;
 use EKvedaras\ClassFactory\Tests\TestClasses\OrderFactory;
+use EKvedaras\ClassFactory\Tests\TestClasses\PaymentFactory;
+use EKvedaras\ClassFactory\Tests\TestClasses\PaymentHandler;
 use Illuminate\Support\Collection;
 
 it('can create a class from base definition', function () {
@@ -98,4 +100,10 @@ it('can create factories with closures in definition', function () {
     $item = ItemFactoryWithClosureInDefinition::new()->make();
 
     expect($item->price)->toBe($item->id * 10);
+});
+
+it('can create factories that have invokable classes as their params', function () {
+    $payment = PaymentFactory::new()->make();
+
+    expect($payment->handler)->toBeInstanceOf(PaymentHandler::class);
 });

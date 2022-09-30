@@ -69,8 +69,8 @@ abstract class ClassFactory
             $this->states,
             function (array $collapsedState, array | Closure $stateWithPendingClosures) {
                 $stateWithResolvedClosures = array_map(
-                    fn ($value) => is_callable($value) ? $value($collapsedState) : $value,
-                    is_callable($stateWithPendingClosures) ? $stateWithPendingClosures($collapsedState) : $stateWithPendingClosures,
+                    fn ($value) => $value instanceof Closure ? $value($collapsedState) : $value,
+                    $stateWithPendingClosures instanceof Closure ? $stateWithPendingClosures($collapsedState) : $stateWithPendingClosures,
                 );
 
                 return array_merge($collapsedState, $stateWithResolvedClosures);
