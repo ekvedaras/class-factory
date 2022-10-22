@@ -63,11 +63,11 @@ class AccountFactory extends ClassFactory {
 }
 
 $account = AccountFactory::new()
-    ->johnSmith()                                                            // Can use predefiened states
-    ->state(['name' => 'John Smitgh Jnr'])                                   // Can override factory state on the fly
+    ->johnSmith()                                                           // Can use predefiened states
+    ->state(['name' => 'John Smitgh Jnr'])                                  // Can override factory state on the fly
     ->state(['name' => fn (array $attributes) => "{$attributes['name']}."]) // Can use closures and have access to already defined attributes
-    ->after(fn (Account $account) => sort($account->orders))                 // Can modify constructed object after it was created
-    ->make(['id' => 3])                                                      // Can provide final modifications and return the new object
+    ->after(fn (Account $account) => sort($account->orders))                // Can modify constructed object after it was created
+    ->make(['id' => 3])                                                     // Can provide final modifications and return the new object
 ```
 
 ## Testing
