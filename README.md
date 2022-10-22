@@ -4,8 +4,8 @@
 [![Tests](https://github.com/ekvedaras/class-factory/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/ekvedaras/class-factory/actions/workflows/run-tests.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/ekvedaras/class-factory.svg?style=flat-square)](https://packagist.org/packages/ekvedaras/class-factory)
 
-A factory class that uses passes each property directly to constructor.
-This way your class does not need to deal received array create itself from and there is no reflection magic involved.
+A factory class that passes each property directly to constructor.
+This way your class does not need to deal with received array to create itself from and there is no reflection magic involved.
 This is mostly useful for creating plain classes like value objects, entities, DTOs, etc.
 
 ## Installation
@@ -37,6 +37,7 @@ class Account {
     }
 }
 
+/** @extends ClassFactory<Account> */
 class AccountFactory extends ClassFactory {
     protected string $class = Account::class;
     
@@ -62,10 +63,11 @@ class AccountFactory extends ClassFactory {
 }
 
 $account = AccountFactory::new()
-    ->johnSmith() // Can use predefiened states
-    ->state(['name' => 'John Smitgh Jnr.']) // Can override factory state on the fly
-    ->after(fn (Account $account) => sort($account->orders)) // Can modify constructed object after it was created
-    ->make(['id' => 3]) // Can provide final modifications and return the new object
+    ->johnSmith()                                                           // Can use predefiened states
+    ->state(['name' => 'John Smitgh Jnr'])                                  // Can override factory state on the fly
+    ->state(['name' => fn (array $attributes) => "${$attributes['name']}"]) // Can use closures and have access to already defined attributes
+    ->after(fn (Account $account) => sort($account->orders))                // Can modify constructed object after it was created
+    ->make(['id' => 3])                                                     // Can provide final modifications and return the new object
 ```
 
 ## Testing
