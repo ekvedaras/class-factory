@@ -1,5 +1,6 @@
 <?php
 
+use EKvedaras\ClassFactory\CollapsingState;
 use EKvedaras\ClassFactory\Tests\TestClasses\Account;
 use EKvedaras\ClassFactory\Tests\TestClasses\AccountFactory;
 use EKvedaras\ClassFactory\Tests\TestClasses\CustomerFactory;
@@ -57,13 +58,17 @@ it('passes current attributes to state callbacks', function () {
         expect($attributes)->toBe(['id' => 1, 'name' => 'John Doe']);
 
         return 2;
-    }])->make(['id' => function (array $attributes) {
+    }])->state(function (array $attributes) {
+        expect($attributes)->toEqual(['id' => new CollapsingState([1, fn () => 2, fn () => 3]), 'name' => 'John Doe']);
+
+        return ['id' => 4];
+    })->make(['id' => function (array $attributes) {
         expect($attributes)->toBe(['id' => 2, 'name' => 'John Doe']);
 
         return 3;
     }]);
 
-    expect($account->id)->toBe(3);
+    expect($account->id)->toBe(4);
 });
 
 it('automatically makes other factories as properties', function () {
@@ -109,7 +114,7 @@ it('can create factories that have invokable classes as their params', function 
     expect($payment->handler)->toBeInstanceOf(PaymentHandler::class);
 });
 
-it('resolves closures only after collapsing states', function () {
+it('resolves property closures only after collapsing states', function () {
     $item = ItemFactoryWithClosureInDefinition::new()->make(['id' => 5]);
 
     expect($item->price)->toBe(50);

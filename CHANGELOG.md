@@ -2,6 +2,11 @@
 
 All notable changes to `class-factory` will be documented in this file.
 
+## v1.1.1 - 2022-11-01
+
+### Fixed
+- Unwrap closure states after collapsing properties without property closure states and before collapsing property closure states.
+
 ## v1.1.0 - 2022-11-01
 
 ### Added
