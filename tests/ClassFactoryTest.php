@@ -126,3 +126,10 @@ it('unwraps closure values', function () {
     expect($namedAction->action)->toBeInstanceOf(Closure::class)
         ->and(call_user_func($namedAction->action))->toBe(30);
 });
+
+it('ignores properties that don\'t exist', function () {
+    $account = AccountFactory::new()->make(['nonExistingProperty' => 1]);
+
+    expect($account)->toBeInstanceOf(Account::class)
+        ->and($account)->not()->toHaveProperty('nonExistingProperty');
+});

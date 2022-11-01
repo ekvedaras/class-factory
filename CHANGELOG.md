@@ -2,6 +2,11 @@
 
 All notable changes to `class-factory` will be documented in this file.
 
+## v1.1.2 - 2022-11-01
+
+### Fixed
+- Handling of non-existing properties while collapsing states.
+
 ## v1.1.1 - 2022-11-01
 
 ### Fixed

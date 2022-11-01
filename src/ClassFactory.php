@@ -97,7 +97,7 @@ abstract class ClassFactory
                 }
 
                 foreach ($state as $key => $value) {
-                    $carry[$key]->add($value);
+                    ($carry[$key] ?? null)?->add($value);
                 }
 
                 return $carry;
@@ -153,6 +153,10 @@ abstract class ClassFactory
          */
         foreach ($closureStates as $closureState) {
             foreach (call_user_func($closureState->state, $collapsedState) as $key => $value) {
+                if (! array_key_exists($key, $collapsedState)) {
+                    continue;
+                }
+
                 if ($collapsedState[$key] instanceof CollapsingState) {
                     $collapsedState[$key]->add($value);
 
