@@ -4,6 +4,7 @@ use EKvedaras\ClassFactory\Tests\TestClasses\Account;
 use EKvedaras\ClassFactory\Tests\TestClasses\AccountFactory;
 use EKvedaras\ClassFactory\Tests\TestClasses\CustomerFactory;
 use EKvedaras\ClassFactory\Tests\TestClasses\ItemFactoryWithClosureInDefinition;
+use EKvedaras\ClassFactory\Tests\TestClasses\NameActionFactory;
 use EKvedaras\ClassFactory\Tests\TestClasses\OrderFactory;
 use EKvedaras\ClassFactory\Tests\TestClasses\PaymentFactory;
 use EKvedaras\ClassFactory\Tests\TestClasses\PaymentHandler;
@@ -112,4 +113,11 @@ it('resolves closures only after collapsing states', function () {
     $item = ItemFactoryWithClosureInDefinition::new()->make(['id' => 5]);
 
     expect($item->price)->toBe(50);
+});
+
+it('unwraps closure values', function () {
+    $namedAction = NameActionFactory::new()->make();
+
+    expect($namedAction->action)->toBeInstanceOf(Closure::class)
+        ->and(call_user_func($namedAction->action))->toBe(30);
 });

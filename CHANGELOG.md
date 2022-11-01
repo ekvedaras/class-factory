@@ -2,6 +2,14 @@
 
 All notable changes to `class-factory` will be documented in this file.
 
+## v1.1.0 - 2022-11-01
+
+### Added
+- `ClosureValue` to wrap closures that should be passed to class constructor as plain closures will be evaluated before doing so.
+
+### Fixed
+- Make sure property closure states get the most up-to-date attributes.
+
 ## v1.0.2 - 2022-09-30
 
 ### Fixed
