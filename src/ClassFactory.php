@@ -65,25 +65,104 @@ abstract class ClassFactory
     {
         $definedProperties = array_flip(array_keys($this->definition()));
 
-        $collapsedStateWithPendingFactories = array_reduce(
+        /**
+         * Evaluate states that are closures and group all resulting states per property
+         *
+         *  $this->states = [
+         *      ['id' => 1, 'key' => 'a', 'prop' => OtherClassFactory::new()],
+         *      fn () => ['id' => 2],
+         *      ['key' => fn ($attrs) => $attrs['key'] . 'b' . $attrs['id']],
+         *      ['prop' => fn ($attrs) => $attrs['prop']->someState()],
+         *  ];
+         * turns into
+         *  $collapsedState = [
+         *      'id' => [1, 2],
+         *      'key' => ['a', fn ($attrs) => $attrs['key'] . 'b' . $attrs['id']],
+         *      'prop' => [OtherClassFactory::new(), fn ($attrs) => $attrs['prop']->someState()],
+         *  ];
+         */
+        $collapsedState = array_reduce(
             $this->states,
-            function (array $collapsedState, array | Closure $stateWithPendingClosures) {
-                $stateWithResolvedClosures = array_map(
-                    fn ($value) => $value instanceof Closure ? $value($collapsedState) : $value,
-                    $stateWithPendingClosures instanceof Closure ? $stateWithPendingClosures($collapsedState) : $stateWithPendingClosures,
-                );
+            function (array $carry, array | Closure $state) {
+                if ($state instanceof Closure) {
+                    $state = $state($carry);
+                }
 
-                return array_merge($collapsedState, $stateWithResolvedClosures);
+                foreach ($state as $key => $value) {
+                    $carry[$key][] = $value;
+                }
+
+                return $carry;
             },
-            initial: $this->definition(),
+            initial: array_map(fn ($value) => [$value], $this->definition()),
         );
 
-        $collapsedStateWithMadeFactories = array_map(
-            $this->makeIfFactory(...),
-            $collapsedStateWithPendingFactories,
+        /**
+         * If the last property state is not a closure, it will override everything before it.
+         * Therefore, we just take the last state and use it as value for that property.
+         *
+         *  $collapsedState = [
+         *      'id' => [1, 2],
+         *      'key' => ['a', fn ($attrs) => $attrs['key'] . 'b' . $attrs['id']],
+         *      'prop' => [OtherClassFactory::new(), fn ($attrs) => $attrs['prop']->someState()],
+         *  ];
+         * turns into
+         *  $collapsedState = [
+         *      'id' => 2,
+         *      'key' => ['a', fn ($attrs) => $attrs['key'] . 'b' . $attrs['id']],
+         *      'prop' => [OtherClassFactory::new(), fn ($attrs) => $attrs['prop']->someState()],
+         *  ];
+         *
+         * This way we collapse everything we can before evaluating closures, so they get the most up-to-date state
+         * as first argument.
+         */
+        $collapsedState = array_map(
+            fn ($state) => end($state) instanceof Closure ? $state : end($state),
+            $collapsedState,
         );
 
-        return array_intersect_key($collapsedStateWithMadeFactories, $definedProperties);
+        /**
+         * Collapse state for the remaining properties that have the last state as closure.
+         *
+         *  $collapsedState = [
+         *      'id' => 2,
+         *      'key' => ['a', fn ($attrs) => $attrs['key'] . 'b' . $attrs['id']],
+         *      'prop' => [OtherClassFactory::new(), fn ($attrs) => $attrs['prop']->someState()],
+         *  ];
+         * turns into
+         *  $collapsedState = [
+         *      'id' => 2,
+         *      'key' => 'ab2',
+         *      'prop' => OtherClassFactory::new()->someState(),
+         *  ];
+         */
+        foreach ($collapsedState as $key => $values) {
+            if (is_array($values) && end($values) instanceof Closure) {
+                $collapsedState[$key] = array_reduce(
+                    $values,
+                    fn ($carry, $value) => $value instanceof Closure ? $value([$key => $carry] + $collapsedState) : $value,
+                );
+            }
+        }
+
+        /**
+         * Make any other pending class factories.
+         *
+         *  $collapsedState = [
+         *      'id' => 2,
+         *      'key' => 'ab2',
+         *      'prop' => OtherClassFactory::new()->someState(),
+         *  ];
+         * turns into
+         *  $collapsedState = [
+         *      'id' => 2,
+         *      'key' => 'ab2',
+         *      'prop' => OtherClassFactory::new()->someState()->make(),
+         *  ];
+         */
+        $collapsedState = array_map($this->makeIfFactory(...), $collapsedState);
+
+        return array_intersect_key($collapsedState, $definedProperties);
     }
 
     private function makeIfFactory(mixed $value): mixed

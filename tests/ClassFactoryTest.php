@@ -107,3 +107,9 @@ it('can create factories that have invokable classes as their params', function 
 
     expect($payment->handler)->toBeInstanceOf(PaymentHandler::class);
 });
+
+it('resolves closures only after collapsing states', function () {
+    $item = ItemFactoryWithClosureInDefinition::new()->make(['id' => 5]);
+
+    expect($item->price)->toBe(50);
+});
