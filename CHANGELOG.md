@@ -2,6 +2,11 @@
 
 All notable changes to `class-factory` will be documented in this file.
 
+## v1.1.3 - 2022-11-02
+
+### Fixed
+- Revert to old behaviour of resolving closure states as it breaks more things than it solves.
+
 ## v1.1.2 - 2022-11-01
 
 ### Fixed
