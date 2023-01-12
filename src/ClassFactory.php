@@ -27,6 +27,7 @@ abstract class ClassFactory
         return $factory->state($factory->definition());
     }
 
+    /** @return array<string, mixed> */
     abstract protected function definition(): array;
 
     /** @return static<T> */
