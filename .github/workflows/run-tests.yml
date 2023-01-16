@@ -39,11 +39,11 @@ jobs:
 
       - name: Scan code without collections
         if: ${{ matrix.illuminate-collections == 'without-collections' }}
-        run: vendor/bin/phpstan -c phpstan.neon
+        run: vendor/bin/phpstan -c ./phpstan.neon
 
       - name: Scan code with collections
         if: ${{ matrix.illuminate-collections == 'with-collections' }}
-        run: vendor/bin/phpstan -c phpstan-no-baseline.neon
+        run: vendor/bin/phpstan -c ./phpstan-no-baseline.neon
 
       - name: Execute tests
         run: vendor/bin/pest
