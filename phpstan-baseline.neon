@@ -1,0 +1,16 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\$items of method EKvedaras\\\\ClassFactory\\\\Tests\\\\TestClasses\\\\Order\\:\\:__construct\\(\\) has invalid type Illuminate\\\\Support\\\\Collection\\.$#"
+			count: 2
+			path: tests/TestClasses/Order.php
+
+		-
+			message: "#^Property EKvedaras\\\\ClassFactory\\\\Tests\\\\TestClasses\\\\Order\\:\\:\\$items has unknown class Illuminate\\\\Support\\\\Collection as its type\\.$#"
+			count: 2
+			path: tests/TestClasses/Order.php
+
+		-
+			message: "#^Function collect not found\\.$#"
+			count: 1
+			path: tests/TestClasses/OrderFactory.php

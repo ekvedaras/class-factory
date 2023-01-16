@@ -6,20 +6,23 @@ use Closure;
 use Illuminate\Support\Collection;
 
 /**
- * @template T
+ * @template T of object
  */
 abstract class ClassFactory
 {
     /** @var class-string<T> */
     protected string $class;
 
-    /** @var array[]|Closure[] */
+    /** @var array<int, array<string, mixed>|Closure> */
     private array $states = [];
 
     /** @var Closure[] */
     private array $lateTransformers = [];
 
-    /** @return static<T> */
+    final public function __construct()
+    {
+    }
+
     public static function new(): static
     {
         $factory = new static();
@@ -30,7 +33,7 @@ abstract class ClassFactory
     /** @return array<string, mixed> */
     abstract protected function definition(): array;
 
-    /** @return static<T> */
+    /** @param array<string, mixed>|Closure $state */
     public function state(array | Closure $state): static
     {
         $this->states[] = $state;
@@ -38,7 +41,6 @@ abstract class ClassFactory
         return $this;
     }
 
-    /** @return static<T> */
     public function after(Closure $transformer): static
     {
         $this->lateTransformers[] = $transformer;
@@ -46,7 +48,10 @@ abstract class ClassFactory
         return $this;
     }
 
-    /** @return T */
+    /**
+     * @param array<string, mixed>|Closure|null $state
+     * @return T
+     */
     public function make(array | Closure $state = null): object
     {
         if (isset($state)) {
@@ -62,6 +67,7 @@ abstract class ClassFactory
         return $object;
     }
 
+    /** @return array<string, mixed> */
     private function collapseStates(): array
     {
         $definition = $this->definition();
