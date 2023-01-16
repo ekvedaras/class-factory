@@ -2,6 +2,11 @@
 
 All notable changes to `class-factory` will be documented in this file.
 
+## v1.1.5 - 2023-01-16
+
+- Add phpstan with level 9
+- Start testing with php 8.2
+
 ## v1.1.4 - 2023-01-12
 
 Make phpstan happier ❤️
