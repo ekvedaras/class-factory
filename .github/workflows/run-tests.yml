@@ -35,6 +35,7 @@ jobs:
         run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
       - name: Install illuminate/collections
+        if: ${{ matrix.illuminate-collections == 'with-collections' }}
         run: composer require illuminate/collections --${{ matrix.stability }} -W --prefer-dist --no-interaction
 
       - name: Scan code without collections
