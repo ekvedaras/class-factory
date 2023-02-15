@@ -58,13 +58,22 @@ abstract class ClassFactory
             $this->state($state);
         }
 
-        $object = new $this->class(...$this->collapseStates());
+        $object = $this->newInstance($this->collapseStates());
 
         foreach ($this->lateTransformers as $transformer) {
             $transformer($object);
         }
 
         return $object;
+    }
+
+    /**
+     * @param array<string, mixed> $properties
+     * @return T
+     */
+    protected function newInstance(array $properties): object
+    {
+        return new $this->class(...$properties);
     }
 
     /** @return array<string, mixed> */
