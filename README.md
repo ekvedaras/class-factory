@@ -27,12 +27,14 @@ Provides autocomplete and refactoring capabillities for PhpStorm.
 
 ```php
 use EKvedaras\ClassFactory\ClassFactory;
+use EKvedaras\ClassFactory\ClosureValue;
 
 class Account {
     public function __construct(
         public readonly int $id,
         public string $name,
         public array $orders,
+        public \Closure $monitor,
     ) {
     }
 }
@@ -50,6 +52,7 @@ class AccountFactory extends ClassFactory {
                 OrderFactory::new()->state(['id' => 1]),
                 OrderFactory::new()->state(['id' => 2]),
             ],
+            'monitor' => new ClosureValue(fn () => true),
         ];
     }
 
@@ -67,7 +70,19 @@ $account = AccountFactory::new()
     ->state(['name' => 'John Smitgh Jnr'])                                  // Can override factory state on the fly
     ->state(['name' => fn (array $attributes) => "{$attributes['name']}."]) // Can use closures and have access to already defined attributes
     ->after(fn (Account $account) => sort($account->orders))                // Can modify constructed object after it was created
+    ->state(['monitor' => new ClosureValue(fn () => false)])                // Can set state of closure type properties using `ClosureValue` wrapper
     ->make(['id' => 3])                                                     // Can provide final modifications and return the new object
+```
+
+### Customising class creation
+
+If you don't want class to be created by directly passing attributes to constructor, you can override `newInstance` method in the factory and do change the behavior.
+
+```php
+protected function newInstance(array $properties): object
+{
+    return Account::makeUsingProperties($properties);
+}
 ```
 
 ## Testing
