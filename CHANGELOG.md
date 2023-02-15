@@ -2,6 +2,12 @@
 
 All notable changes to `class-factory` will be documented in this file.
 
+## v1.2.0 - 2023-02-15
+
+### Added
+
+- Ability to customize how the class is created via `newInstance`. @erikgaal
+
 ## v1.1.5 - 2023-01-16
 
 - Add phpstan with level 9
