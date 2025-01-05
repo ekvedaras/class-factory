@@ -2,6 +2,16 @@
 
 All notable changes to `class-factory` will be documented in this file.
 
+## v1.2.1 - 2025-01-05
+
+### Updated
+
+* Dev dependencies
+* Rector
+* Enable PHP CS Fixer parallel
+* Resolve PHP 8.4 deprecation
+* Additional state closure example in readme
+
 ## v1.2.0 - 2023-02-15
 
 ### Added
