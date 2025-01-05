@@ -52,7 +52,7 @@ abstract class ClassFactory
      * @param array<string, mixed>|Closure|null $state
      * @return T
      */
-    public function make(array | Closure $state = null): object
+    public function make(array | Closure | null $state = null): object
     {
         if (isset($state)) {
             $this->state($state);
