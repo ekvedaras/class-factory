@@ -84,9 +84,9 @@ abstract class ClassFactory
 
         $collapsedStateWithPendingFactories = array_reduce(
             $this->states,
-            function (array $collapsedState, array | Closure $stateWithPendingClosures) {
+            static function (array $collapsedState, array | Closure $stateWithPendingClosures) {
                 $stateWithResolvedClosures = array_map(
-                    fn ($value) => $value instanceof Closure ? $value($collapsedState) : $value,
+                    static fn ($value) => $value instanceof Closure ? $value($collapsedState) : $value,
                     $stateWithPendingClosures instanceof Closure ? $stateWithPendingClosures($collapsedState) : $stateWithPendingClosures,
                 );
 
@@ -101,7 +101,7 @@ abstract class ClassFactory
         );
 
         $collapsedStateWithUnwrappedValues = array_map(
-            fn ($value) => $value instanceof ClosureValue ? $value->value : $value,
+            static fn ($value) => $value instanceof ClosureValue ? $value->value : $value,
             $collapsedStateWithMadeFactories,
         );
 
