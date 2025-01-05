@@ -69,6 +69,11 @@ $account = AccountFactory::new()
     ->johnSmith()                                                           // Can use predefiened states
     ->state(['name' => 'John Smitgh Jnr'])                                  // Can override factory state on the fly
     ->state(['name' => fn (array $attributes) => "{$attributes['name']}."]) // Can use closures and have access to already defined attributes
+    ->state(function (array $attributes) {                                  // Can use closures and modify state of multiple attributes by returning an array
+        $id = $attributes['id'] + 1;    
+        
+        return ['id' => $id];
+    })
     ->after(fn (Account $account) => sort($account->orders))                // Can modify constructed object after it was created
     ->state(['monitor' => new ClosureValue(fn () => false)])                // Can set state of closure type properties using `ClosureValue` wrapper
     ->make(['id' => 3])                                                     // Can provide final modifications and return the new object
